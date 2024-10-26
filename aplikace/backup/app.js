@@ -4,8 +4,7 @@ app.controller("form", ["$scope", function($scope) {
 
     $scope.Math = window.Math;
 
-    $scope.okresy = Object.keys(okresy);
-    $scope.obce   = Object.keys(obce);
+    $scope.okresy = Object.keys(obce);
     $scope.stavby = Object.keys(stavby);
 
     $scope.$watch("okres", function(o, n){

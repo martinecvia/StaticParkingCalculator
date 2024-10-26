@@ -1,99 +1,109 @@
 <!DOCTYPE html>
-<html>
-<head lang="cs">
-    <meta charset="UTF-8">
-    <title>Odstavné a parkovací plochy - Výpočet celkového počtu stání</title>
-    <link rel="stylesheet" href="libs/bootstrap.min.css"/>
-    <link rel="stylesheet" href="style.css"/>
-    <script src="libs/jquery.js"></script>
-    <script src="libs/bootstrap.min.js"></script>
-    <script src="libs/angular.min.js"></script>
-    <script src="libs/angular-cookies.min.js"></script>
-    <script src="libs/ui-bootstrap.min.js"></script>
-    <script src="data.js"></script>
-    <script src="app.js"></script>
-</head>
-<body ng-app="calculator">
-<div class="container">
-<div class="col-md-10 col-md-offset-1">
-    <h2>Odstavné a parkovací plochy - Výpočet celkového počtu stání</h2>
-    <form class="form-horizontal" ng-controller="form">
-        <legend>Základní údaje</legend>
-        <div class="form-group">
-            <label for="okres" class="col-sm-4 control-label">Okres</label>
-            <div class="col-sm-8">
-                <input ng-model="okres" type="text" class="form-control" id="okres" placeholder="Vyberte okres"
-                    typeahead="okres for okres in okresy | filter:$viewValue | limitTo:12"
-                    typeahead-editable="false"
-                    autocomplete="off"
-                    >
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head lang="cs">
+        <meta charset="utf-8">
+        <title>Odstavné a parkovací plochy - Výpočet celkového počtu stání</title>
+        <meta name="description" content="Výpočet celkového počtu parkovacích stání podle zákona §146/2024" />
+        <meta name="author" content="Martin Coplák <211869@vutbr.cz>" />
+        <meta name="author" content="Ing. Michal Radimský, PhD. <radimsky.m@vut.cz>" />
+        <meta name="keywords" content="calculator, 146/2024, §146/2024, parkování, výpočet parkovacích stání" />
+        <!-- css -->
+        <link rel="stylesheet" href="libs/bootstrap.min.css"/>
+        <link rel="stylesheet" href="style.css"/>
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            <![endif]-->
+    </head>
+    <body ng-app="calculator">
+        <div class="container">
+            <div class="col-md-10 col-md-offset-1">
+                <h2>Odstavné a parkovací plochy - Výpočet celkového počtu stání</h2>
+                <form class="form-horizontal" ng-controller="form">
+                    <legend>Základní údaje</legend>
+                    <div class="form-group">
+                        <label for="okres" class="col-sm-4 control-label">Okres</label>
+                        <div class="col-sm-8">
+                            <input ng-model="okres" type="text" class="form-control" id="okres" placeholder="Vyberte okres"
+                                typeahead="okres for okres in okresy | filter:$viewValue | limitTo:12"
+                                typeahead-editable="false"
+                                autocomplete="off"
+                                >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="obec" class="col-sm-4 control-label">Obec</label>
+                        <div class="col-sm-8">
+                            <input ng-model="obec" type="text" class="form-control" id="obec" placeholder="Vyberte obci"
+                                typeahead="obec for obec in obce | filter:$viewValue | limitTo:8"
+                                typeahead-editable="false"
+                                autocomplete="off"
+                                    >
+                        </div>
+                    </div>
+
+                    <legend>Základní ukazatele výhledového počtu odstavných stání</legend>
+                    <div ng-repeat="stavba in stavbyList track by $index">
+                        <a href="" class="right no-print" ng-click="stavbyList.splice($index, 1)">smazat</a>
+                        <hr/>
+                        <div class="form-group">
+                            <label for="druh-stavby" class="col-sm-4 control-label">Druh stavby</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" ng-model="stavba.druhStavby" id="druh-stavby" ng-options="stavba for stavba in stavby"></select>
+                            </div>
+                        </div>
+                        <div></div>
+                        <div class="form-group" ng-repeat="jednotka in stavba.jednotky">
+                            <div class="col-sm-6 control-label" col-sm-5>
+                                Účelová jednotka: <b>{{ jednotka }}</b>
+                                <br/>
+                                Počet účelových jednotek na 1 stání:
+                                    <b ng-hide="stavba.jednotkyNa1[jednotka][1]">{{ stavba.jednotkyNa1[jednotka] }}</b>
+                                    <span ng-show="stavba.jednotkyNa1[jednotka][1]"><b>
+                                        <a class="no-print bigger" href="" ng-click="stavba.jednotkyNa1Value[jednotka] = Math.max(stavba.jednotkyNa1[jednotka][0], stavba.jednotkyNa1Value[jednotka] - 1); recalculate()">-</a>
+                                        {{ stavba.jednotkyNa1Value[jednotka] }}
+                                        <a class="no-print bigger" href="" ng-click="stavba.jednotkyNa1Value[jednotka] = Math.min(stavba.jednotkyNa1[jednotka][1], stavba.jednotkyNa1Value[jednotka] + 1); recalculate()">+</a>
+                                    </b>
+                                        ({{ stavba.jednotkyNa1[jednotka][0] }} - {{ stavba.jednotkyNa1[jednotka][1] }})</span>
+                            </div>
+                            <label ng-attr-for="jednotka" class="col-sm-4 control-label">Počet účelových jednotek v objektu</label>
+                            <div class="col-sm-2"><input ng-change="recalculate()" ng-model="stavba.poctyJednotek[jednotka]" type="number" class="form-control" ng-attr-id="jednotka" placeholder=""> </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="odstavnych-stani" class="col-sm-4 control-label">Počet <span ng-hide="stavba.odstavna">parkovacích</span><span ng-show="stavba.odstavna">odstavných</span> stání</label>
+                            <div class="col-sm-2"><input disabled ng-model="stavba.pocetOdstavnychStani" type="number" class="form-control" id="odstavnych-stani" placeholder=""> </div>
+                            <div class="col-sm-1 unit">stání</div>
+                        </div>
+
+                    </div>
+
+                    <a href="" class="no-print right" ng-click="stavbyList.push({})">přidat další stavbu</a>
+
+                    <legend>Celkový počet stání</legend>
+
+                    <div class="form-group">
+                        <label for="pocet-stani" class="col-sm-4 control-label">Celkový počet stání</label>
+                        <div class="col-sm-2"><input disabled ng-model="celkovyPocetStani" type="number" class="form-control" id="pocet-stani" placeholder=""> </div>
+                        <div class="col-sm-1 unit">stání</div>
+                    </div>
+
+                    <div class="no-print">
+                        <br /> <a onClick='window.print()'><img style="height: 2em" src='icon_print.png' alt='tisk' /> Tisk formuláře </a> <br/> <br/>
+                    </div>
+
+
+                </form>
             </div>
         </div>
-        <div class="form-group">
-            <label for="obec" class="col-sm-4 control-label">Obec</label>
-            <div class="col-sm-8">
-                <input ng-model="obec" type="text" class="form-control" id="obec" placeholder="Vyberte obci"
-                       typeahead="obec for obec in obce | filter:$viewValue | limitTo:8"
-                       typeahead-editable="false"
-                       autocomplete="off"
-                        >
-            </div>
-        </div>
-
-        <legend>Základní ukazatele výhledového počtu odstavných stání</legend>
-        <div ng-repeat="stavba in stavbyList track by $index">
-            <a href="" class="right no-print" ng-click="stavbyList.splice($index, 1)">smazat</a>
-            <hr/>
-            <div class="form-group">
-                <label for="druh-stavby" class="col-sm-4 control-label">Druh stavby</label>
-                <div class="col-sm-8">
-                    <select class="form-control" ng-model="stavba.druhStavby" id="druh-stavby" ng-options="stavba for stavba in stavby"></select>
-                </div>
-            </div>
-            <div></div>
-            <div class="form-group" ng-repeat="jednotka in stavba.jednotky">
-                <div class="col-sm-6 control-label" col-sm-5>
-                    Účelová jednotka: <b>{{ jednotka }}</b>
-                    <br/>
-                    Počet účelových jednotek na 1 stání:
-                        <b ng-hide="stavba.jednotkyNa1[jednotka][1]">{{ stavba.jednotkyNa1[jednotka] }}</b>
-                        <span ng-show="stavba.jednotkyNa1[jednotka][1]"><b>
-                            <a class="no-print bigger" href="" ng-click="stavba.jednotkyNa1Value[jednotka] = Math.max(stavba.jednotkyNa1[jednotka][0], stavba.jednotkyNa1Value[jednotka] - 1); recalculate()">-</a>
-                            {{ stavba.jednotkyNa1Value[jednotka] }}
-                            <a class="no-print bigger" href="" ng-click="stavba.jednotkyNa1Value[jednotka] = Math.min(stavba.jednotkyNa1[jednotka][1], stavba.jednotkyNa1Value[jednotka] + 1); recalculate()">+</a>
-                        </b>
-                            ({{ stavba.jednotkyNa1[jednotka][0] }} - {{ stavba.jednotkyNa1[jednotka][1] }})</span>
-                </div>
-                <label ng-attr-for="jednotka" class="col-sm-4 control-label">Počet účelových jednotek v objektu</label>
-                <div class="col-sm-2"><input ng-change="recalculate()" ng-model="stavba.poctyJednotek[jednotka]" type="number" class="form-control" ng-attr-id="jednotka" placeholder=""> </div>
-            </div>
-
-             <div class="form-group">
-                <label for="odstavnych-stani" class="col-sm-4 control-label">Počet <span ng-hide="stavba.odstavna">parkovacích</span><span ng-show="stavba.odstavna">odstavných</span> stání</label>
-                <div class="col-sm-2"><input disabled ng-model="stavba.pocetOdstavnychStani" type="number" class="form-control" id="odstavnych-stani" placeholder=""> </div>
-                 <div class="col-sm-1 unit">stání</div>
-            </div>
-
-        </div>
-
-        <a href="" class="no-print right" ng-click="stavbyList.push({})">přidat další stavbu</a>
-
-        <legend>Celkový počet stání</legend>
-
-        <div class="form-group">
-            <label for="pocet-stani" class="col-sm-4 control-label">Celkový počet stání</label>
-            <div class="col-sm-2"><input disabled ng-model="celkovyPocetStani" type="number" class="form-control" id="pocet-stani" placeholder=""> </div>
-            <div class="col-sm-1 unit">stání</div>
-        </div>
-
-        <div class="no-print">
-            <br /> <a onClick='window.print()'><img style="height: 2em" src='icon_print.png' alt='tisk' /> Tisk formuláře </a> <br/> <br/>
-        </div>
-
-
-    </form>
-
-</div>
-</div>
-</body>
+        <a href="#" class="scrollup"><i class="fa fa-angle-up active"></i></a>
+        <!-- js -->
+        <script src="libs/jquery.js"></script>
+        <script src="libs/bootstrap.min.js"></script>
+        <script src="libs/angular.min.js"></script>
+        <script src="libs/angular-cookies.min.js"></script>
+        <script src="libs/ui-bootstrap.min.js"></script>
+        <script src="data.js"></script>
+        <script src="app.js"></script>
+    </body>
 </html>
