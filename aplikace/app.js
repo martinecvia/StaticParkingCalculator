@@ -76,8 +76,8 @@ app.controller("form", ["$scope", function($scope) {
                         if (stavba.poctyJednotek[jednotka]) {
                             koeficient = stavba.koeficient / 100 || 1 // Redukční koeficient
                             pocet = stavba.poctyJednotek[jednotka]
-                            stavba.kr = pocet * jednotka.kr * koeficient // Dlouhodobé stáni
-                            stavba.dl = pocet * jednotka.dl * koeficient
+                            stavba.kr = (pocet / jednotka.metric) * jednotka.kr * koeficient // Dlouhodobé stáni
+                            stavba.dl = (pocet / jednotka.metric) * jednotka.dl * koeficient // Krátkodobé stání
                         }
                     }
                 } else {
