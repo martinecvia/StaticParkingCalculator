@@ -1,5 +1,17 @@
 var app = angular.module('calculator', ["ui.bootstrap"]);
 
+function isNumeric(str) {
+    if (typeof str != "string") return false
+    return !isNaN(str) &&
+           !isNaN(parseFloat(str))
+}
+
+$.get("https://api.warfaremc.eu/v1/apko.cz/counter", function(counter) {
+    if (isNumeric(counter)) {
+        document.getElementById("counter").innerHTML = counter
+    }
+});
+
 app.controller("form", ["$scope", function($scope) {
 
     $scope.Math = window.Math;
@@ -26,7 +38,6 @@ app.controller("form", ["$scope", function($scope) {
                 return
             }
             $scope.okres = null
-            console.log($scope.viewOkresy, $scope.viewObce)
         }
         $scope.viewOkresy = $scope.okresy;
     });
@@ -46,7 +57,6 @@ app.controller("form", ["$scope", function($scope) {
                 return
             }
             $scope.obec = null
-            console.log($scope.viewOkresy, $scope.viewObce)
         }
         $scope.viewObce = $scope.obce;
     });
@@ -62,7 +72,6 @@ app.controller("form", ["$scope", function($scope) {
         }
         for (stavba in $scope.stavbyList) {
             stavba = $scope.stavbyList[stavba];
-            console.log(stavba)
             if (stavba.druhStavby) {
                 if (stavby[stavba.druhStavby]) {
                     stavba.jednotky = Object.values(stavby[stavba.druhStavby]);
