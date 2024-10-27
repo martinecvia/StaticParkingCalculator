@@ -74,10 +74,11 @@ app.controller("form", ["$scope", function($scope) {
                     for (j in stavba.jednotky) {
                         var jednotka = stavba.jednotky[j];
                         if (stavba.poctyJednotek[jednotka]) {
+                            const factor = Math.pow(10, 2)
                             koeficient = stavba.koeficient / 100 || 1 // Redukční koeficient
                             pocet = stavba.poctyJednotek[jednotka]
-                            stavba.kr = (pocet / jednotka.metric) * jednotka.kr * koeficient // Dlouhodobé stáni
-                            stavba.dl = (pocet / jednotka.metric) * jednotka.dl * koeficient // Krátkodobé stání
+                            stavba.kr = Math.round(((pocet / jednotka.metric) * jednotka.kr * koeficient) * factor) / factor // Dlouhodobé stáni
+                            stavba.dl = Math.round(((pocet / jednotka.metric) * jednotka.dl * koeficient) * factor) / factor // Krátkodobé stání
                         }
                     }
                 } else {
