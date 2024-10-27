@@ -85,8 +85,8 @@ app.controller("form", ["$scope", function($scope) {
                 }
             }
         }
-        $scope.kr = $scope.stavbyList.filter((o) => o.druhStavby != "").reduce((sum, stavba) => sum + (stavba.kr || 0.0), 0)
-        $scope.dl = $scope.stavbyList.filter((o) => o.druhStavby != "").reduce((sum, stavba) => sum + (stavba.dl || 0.0), 0)
+        $scope.kr = Math.round($scope.stavbyList.filter((o) => o.druhStavby != "").reduce((sum, stavba) => sum + (stavba.kr || 0.0), 0))
+        $scope.dl = Math.round($scope.stavbyList.filter((o) => o.druhStavby != "").reduce((sum, stavba) => sum + (stavba.dl || 0.0), 0))
     };
 
     $scope.$watch("stavbyList", $scope.recalculate, true);

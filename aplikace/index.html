@@ -40,11 +40,11 @@
                     <label for="typ" class="col-sm-4 control-label">Typ objektu</label>
                     <div class="col-sm-8"><input ng-model="typ" type="text" class="form-control" id="typ" placeholder=""></div>
                 </div>
-                <!-- Pozice, Okres -->
+                <!-- Pozice, Okres, Katastrální území -->
                 <div class="form-group">
-                    <label for="okres" class="col-sm-4 control-label">Okres</label>
+                    <label for="okres" class="col-sm-4 control-label">Katastrální území</label>
                     <div class="col-sm-8">
-                        <input ng-model="okres" type="text" class="form-control" id="okres" placeholder="Vyberte okres ze seznamu" ng-trim="false" 
+                        <input ng-model="okres" type="text" class="form-control" id="okres" placeholder="Vyberte Katastrální území ze seznamu" ng-trim="false" 
                             typeahead="okres for okres in viewOkresy | filter:$viewValue | limitTo:8"
                             typeahead-editable="false"
                             typeahead-min-length="0"
@@ -67,7 +67,7 @@
                     </div>
                 </div>
 
-                <legend>Základní ukazatele výhledového počtu odstavných stání</legend>
+                <legend>Ukazatele pro výpočet základního počtu parkovacích stání</legend>
                 <div ng-repeat="stavba in stavbyList track by $index">
                     <a href="" class="right no-print" ng-if="stavbyList.length > 1" ng-click="stavbyList.splice($index, 1)">smazat</a>
                     <hr/>
@@ -79,17 +79,18 @@
                         </div>
                     </div>
                     <div class="form-group" ng-if="stavba.druhStavby">
-                        <label for="redukcni-koeficient-stavby" class="col-sm-4 control-label">Redukční koeficient pro stavbu</label>
-                        <div class="col-sm-2"><input ng-model="stavba.koeficient" type="number" class="form-control" id="koeficient" placeholder="100"> </div>
-                        <div class="col-sm-1 unit">%</div>
+                        <label for="redukcni-koeficient-stavby" class="col-sm-4 control-label">Procentuální korekce</label>
+                        <div class="col-sm-2"><input ng-model="stavba.koeficient" type="number" class="form-control" id="koeficient" placeholder="100"></div>
+                        <div class="col-sm-1 unit no-print">%</div>
+                        <div class="col-sm-1 hover" no-print><span>&#8505;</span><div>Výchozí procentuální korekce je 100 %. Pokud je procentuální korekce stanovená v územním plánu, v územním plánu s prvky regulačního plánu nebo v regulačním plánu může definovat minimální požadovaný a nejvyšší přípustný počet stání pro jednotlivé účely staveb. V takovém případě se použije odpovídající procentuální korekce.</div></div>
                     </div>
                     <div class="form-group" ng-repeat="jednotka in stavba.jednotky" ng-if="stavba.druhStavby">
-                        <div class="col-sm-5 control-label" col-sm-5>
-                            Účelová jednotka: <b>{{ jednotka.unit }}</b>
+                        <div class="col-sm-5 control-label" >
+                            Účelová jednotka: <b style="color: red;">{{ jednotka.unit }}</b>
                             <br/>
                             Počet účelových jednotek na 1 stání: <b style="color: red;">{{ jednotka.metric }}</b>
                         </div>
-                        <div class="col-sm-1 hover"><span ng-if="jednotka.comment">&#8505;</span><div>{{ jednotka.comment }}</div></div>
+                        <div class="col-sm-1 hover no-print"><span ng-if="jednotka.comment" >&#8505;</span><div>{{ jednotka.comment }}</div></div>
                         <label ng-attr-for="jednotka" class="col-sm-4 control-label">Počet účelových jednotek v objektu</label>
                         <div class="col-sm-2"><input ng-change="recalculate()" ng-model="stavba.poctyJednotek[jednotka]" type="number" class="form-control" ng-attr-id="jednotka" placeholder=""> </div>
                     </div>
@@ -104,21 +105,19 @@
 
                 <a href="" class="no-print right" ng-click="stavbyList.push({})">přidat další stavbu</a>
 
-                <legend>Celkový počet stání</legend>
-
+                <legend>Celkový počet stání (zaokrouhleno na celá čísla dle vyhlášky)</legend>
                 <div class="form-group">
                     <label for="pocet-stani" class="col-sm-4 control-label">Krátkodobé</label>
                     <div class="col-sm-2"><input disabled ng-model="kr" type="number" class="form-control" id="pocet-stani" placeholder=""> </div>
                     <label for="pocet-stani" class="col-sm-1 control-label">Dlouhodobé</label>
                     <div class="col-sm-2"><input disabled ng-model="dl" type="number" class="form-control" id="pocet-stani" placeholder=""> </div>
-                    <div class="col-sm-1 unit">stání</div>
+                    <div class="col-sm-1 unit no-print">stání</div>
                 </div>
-
-                <div class="no-print">
-                    <br /> <a onClick='window.print()'><img style="height: 2em" src='icon_print.png' alt='tisk' /> Tisk formuláře </a> <br/> <br/>
+                <!-- Footer -->
+                <div class="form-group">
+                    <a onClick='window.print()' class="no-print left"><img style="height: 2em" src='./icon_print.png' alt='tisk' />Tisk formuláře</a>
+                    <div class="col-sm-4 no-print right" style="margin-top: 0; text-align: right;">Počet návštěvníků: $(api-call).??[visitor@counter]</div>
                 </div>
-
-
             </form>
         </div>
     </div>
