@@ -94,6 +94,7 @@
                         <label ng-attr-for="jednotka" class="col-sm-4 control-label">Počet účelových jednotek v objektu</label>
                         <div class="col-sm-2"><input ng-change="recalculate()" ng-model="stavba.poctyJednotek[jednotka]" type="number" class="form-control" ng-attr-id="jednotka" placeholder=""> </div>
                     </div>
+                    <!-- Zrušeno částečné zobrazování par. stání
                     <div class="form-group" ng-if="stavba.druhStavby">
                         <label for="pocet-stani" class="col-sm-4 control-label">Krátkodobé</label>
                         <div class="col-sm-2"><input disabled ng-model="stavba.kr" type="number" class="form-control" id="pocet-stani" placeholder=""> </div>
@@ -101,6 +102,7 @@
                         <div class="col-sm-2"><input disabled ng-model="stavba.dl" type="number" class="form-control" id="pocet-stani" placeholder=""> </div>
                         <div class="col-sm-1 unit">stání</div>
                     </div>
+                    -->
                 </div>
 
                 <a href="" class="no-print right" ng-click="stavbyList.push({})">přidat další stavbu</a>
