@@ -1,18 +1,6 @@
 var app = angular.module('calculator', ["ui.bootstrap"]);
 
-function isNumeric(str) {
-    if (typeof str != "string") return false
-    return !isNaN(str) &&
-           !isNaN(parseFloat(str))
-}
-
-$.get("https://api.warfaremc.eu/v1/apko.cz/counter", function(counter) {
-    if (isNumeric(counter)) {
-        document.getElementById("counter").innerHTML = counter
-    }
-});
-
-app.controller("form", ["$scope", function($scope) {
+app.controller("form", ["$scope", "$http", function($scope, $http) {
 
     $scope.Math = window.Math;
 
@@ -22,6 +10,13 @@ app.controller("form", ["$scope", function($scope) {
 
     $scope.viewOkresy = $scope.okresy;
     $scope.viewObce = $scope.obce;
+
+    // Fetch the counter data
+    $http.get("https://api.warfaremc.eu/v1/apko.cz/counter").then(response => {
+        if (isFinite(response.data)) {
+            document.getElementById("counter").innerHTML = response.data;
+        }
+    });
 
     $scope.$watch("okres", function(o, n) {
         if (o) {
@@ -61,9 +56,8 @@ app.controller("form", ["$scope", function($scope) {
         $scope.viewObce = $scope.obce;
     });
 
-    $scope.onFocus = function (e) {
-        $(e.target).trigger("input");
-        $(e.target).trigger("change"); // for IE
+    $scope.onFocus = function(e) {
+        $(e.target).trigger("input").trigger("change");
     };
 
     $scope.recalculate = function() {
