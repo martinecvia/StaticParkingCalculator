@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="libs/bootstrap.min.css"/>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="style.css" />
+    <style>.dropdown{border:1px solid #ccc;max-height:200px;overflow-y:auto;width:250px;background:#fff;position:absolute;z-index:999}.dropdown div{padding:5px;cursor:pointer}.dropdown div:hover{background:#eee}</style>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -23,29 +24,6 @@
     <script src="libs/ui-bootstrap.min.js"></script>
     <script src="data.js"></script>
     <script src="app.js"></script>
-
-    <style>
-        .dropdown {
-            border: 1px solid #ccc;
-            max-height: 200px;
-            overflow-y: auto;
-            width: 250px;
-            background: white;
-            position: absolute;
-            z-index: 999;
-        }
-        .dropdown div {
-            padding: 5px;
-            cursor: pointer;
-        }
-        .dropdown div:hover {
-            background: #eee;
-        }
-
-        div.col-sm-1:nth-child(2) {
-            left: 79px;
-        }
-    </style>
 </head>
 <body ng-app="calculator">
     <div class="container">

@@ -1,0 +1,85 @@
+var app = angular.module('calculator', ["ui.bootstrap"]);
+
+app.controller("form", ["$scope", "$http", function($scope, $http) {
+
+    $scope.Math = window.Math;
+    $scope.viewObce = obce || [];
+
+    $scope.stavby = Object.keys(stavby);
+
+    // Fetch the counter data
+    $http.get("https://api.warfaremc.eu/v1/apko.cz/counter").then(response => {
+        if (isFinite(response.data)) {
+            document.getElementById("counter").innerHTML = response.data;
+        }
+    });
+
+    $scope.showDropdown = false;
+    $scope.selectedTown = "";
+
+    $scope.selectTown = function(town) {
+        $scope.selectedTown = town;
+        $scope.searchText = town;
+        $scope.showDropdown = false;
+    };
+
+    $scope.hideDropdown = function() {
+        // Malé zpoždění, aby šel klik zachytit dřív než zmizí
+        setTimeout(function() {
+            $scope.$apply(function() {
+                $scope.showDropdown = false;
+            });
+        }, 200);
+    };
+
+    $scope.getRootByType = function(druhStavby) {
+        let posledniSkupina = null;
+        for (const key in stavby) {
+            if (stavby[key] === null) {
+                posledniSkupina = key;
+            } else if (key === druhStavby) {
+                return posledniSkupina;
+            }
+        }
+        return null;
+    };
+
+    $scope.recalculate = function() {
+        if (!$scope.stavbyList) {
+            $scope.stavbyList = [{}];
+        }
+        for (stavba in $scope.stavbyList) {
+            stavba = $scope.stavbyList[stavba];
+            if (stavba.druhStavby) {
+                if (stavby[stavba.druhStavby]) {
+                    stavba.jednotky = Object.values(stavby[stavba.druhStavby]);
+                    if (!stavba.poctyJednotek) {
+                        stavba.poctyJednotek = {};
+                    }
+                    stavba.kr = 0.0;
+                    stavba.dl = 0.0;
+                    for (j in stavba.jednotky) {
+                        var jednotka = stavba.jednotky[j];
+                        if (stavba.poctyJednotek[jednotka.uuid]) {  
+                            koeficient = stavba.koeficient / 100 || 1;
+                            var pocet = stavba.poctyJednotek[jednotka.uuid];
+                            stavba.kr += ((pocet / jednotka.metric) * jednotka.kr * koeficient);
+                            stavba.dl += ((pocet / jednotka.metric) * jednotka.dl * koeficient);
+                        }
+                    }
+                    const factor = Math.pow(10, 2);
+                    stavba.kr = Math.round(stavba.kr * factor) / factor;
+                    stavba.dl = Math.round(stavba.dl * factor) / factor;
+                } else {
+                    stavba.druhStavby = ""; stavba.kr = 0.0; stavba.dl = 0.0; stavba.poctyJednotek = {}; stavba.koeficient = null
+                }
+            }
+        }
+        $scope.kr = Math.round($scope.stavbyList.filter((o) => o.druhStavby != "").reduce((sum, stavba) => sum + (stavba.kr || 0.0), 0))
+        $scope.dl = Math.round($scope.stavbyList.filter((o) => o.druhStavby != "").reduce((sum, stavba) => sum + (stavba.dl || 0.0), 0))
+        $scope.celkem = Math.round(($scope.kr || 0) + ($scope.dl || 0));
+    };
+
+    $scope.$watch("stavbyList", $scope.recalculate, true);
+
+}]);
