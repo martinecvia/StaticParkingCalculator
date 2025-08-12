@@ -283,7 +283,7 @@ var stavby = {
     // Skupina
     "Sport a rekreace": null,
     // Účel stavby
-    "- hala, tělocvična, venkovní sportoviště, stadion a jiné": [
+    "- hala, tělocvična, venkovní sportoviště, stadion": [
         {
             // Účelová jednotka
             "root": "Sport a rekreace",
