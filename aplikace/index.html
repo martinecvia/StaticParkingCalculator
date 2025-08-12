@@ -7,11 +7,11 @@
     <meta name="author" content="Martin Coplák <211869@vutbr.cz>" />
     <meta name="author" content="Ing. Michal Radimský, PhD. <radimsky.m@vut.cz>" />
     <meta name="keywords" content="calculator, 146/2024, §146/2024, parkování, výpočet parkovacích stání" />
-    <!-- css -->
+    <!-- CSS -->
     <link rel="stylesheet" href="libs/bootstrap.min.css"/>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="style.css" />
-    <style>.dropdown{border:1px solid #ccc;max-height:200px;overflow-y:auto;width:250px;background:#fff;position:absolute;z-index:999}.dropdown div{padding:5px;cursor:pointer}.dropdown div:hover{background:#eee}</style>
+    <style>.dropdown{border:1px solid #ccc;max-height:200px;overflow-y:auto;width:250px;background:#fff;position:absolute;z-index:999}.dropdown div{padding:5px;cursor:pointer}.dropdown div:hover{background:#eee}div.col-sm-1:nth-child(2){left:79px}</style>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -22,15 +22,15 @@
     <script src="libs/angular.min.js"></script>
     <script src="libs/angular-cookies.min.js"></script>
     <script src="libs/ui-bootstrap.min.js"></script>
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <script src="data.12082025.js"></script>
+    <script src="app.12082025.js"></script>
 </head>
 <body ng-app="calculator">
     <div class="container">
         <div class="col-md-10 col-md-offset-1">
             <h2>Odstavné a parkovací plochy - Výpočet celkového počtu stání
-                <b style="color: red">
-                    <b style="color: white">-</b> (Zkušební verze)
+                <br/>
+                <b style="color: red">Výpočet celkového počtu parkovacích stání podle zákona §146/2024 (12.8.2025)
                 </b>
             </h2>
             <form class="form-horizontal" ng-controller="form">
@@ -47,7 +47,7 @@
                 </div>
                 <!-- Pozice, Obec -->
                 <div class="form-group">
-                    <label for="obec" class="col-sm-4 control-label">Oblast</label>
+                    <label for="obec" class="col-sm-4 control-label">Katastrální území</label>
                     <div class="col-sm-8">
                         <input ng-model="searchText" type="text" class="form-control" placeholder="Vyberte oblast katastrálního území ze seznamu" ng-trim="false" ng-blur="hideDropdown()" ng-focus="showDropdown=true">
                         <div class="dropdown" ng-show="showDropdown && filteredTowns.length">
@@ -56,7 +56,6 @@
                                 {{town}}
                             </div>
                         </div>
-                        
                     </div>
                 </div>
 
@@ -73,17 +72,15 @@
                     </div>
                     <div class="form-group" ng-if="stavba.druhStavby">
                         <label for="redukcni-koeficient-stavby" class="col-sm-4 control-label">Procentuální korekce (%)</label>
-                        <div class="col-sm-2"><input ng-model="v.koeficient" type="number" class="form-control" id="koeficient" placeholder="100"></div>
+                        <div class="col-sm-2"><input ng-model="stavba.koeficient" type="number" class="form-control" id="koeficient" placeholder="100"></div>
                         <div class="col-sm-2 hover" no-print><span>&#8505;</span><div>Výchozí procentuální korekce je 100 %. Pokud je procentuální korekce stanovená v územním plánu, v územním plánu s prvky regulačního plánu nebo v regulačním plánu může definovat minimální požadovaný a nejvyšší přípustný počet stání pro jednotlivé účely staveb. V takovém případě se použije odpovídající procentuální korekce.</div></div>
-                        <label for="redukcni-koeficient-stavby" class="col-sm-2 control-label">Nadřazená skupina</label><div class="col-sm-2 unit"><b style="color: red;">{{ getRootByType(stavba.druhStavby) }}</b></div>
+                        <label for="redukcni-koeficient-stavby" class="col-sm-2 control-label">Skupina a kód</label><div class="col-sm-2 unit"><b style="color: red;">[Kód: {{ getCodeByType(stavba.druhStavby) }}]: {{ getRootByType(stavba.druhStavby) }}</b></div>
                     </div>
                     <div class="form-group" ng-repeat="jednotka in stavba.jednotky" ng-if="stavba.druhStavby">
                         <div class="col-sm-5 control-label" >
                             Účelová jednotka: <b style="color: red;">{{ jednotka.unit }}</b>
                             <br/>
                             Počet účelových jednotek na 1 stání: <b style="color: red;">{{ jednotka.metric }}</b>
-                            <br/>
-                            Kód: <b style="color: red;">{{ jednotka.code }}</b>
                         </div>
                         <div class="col-sm-1 hover no-print"><span ng-if="jednotka.comment">&#8505;</span><div>{{ jednotka.comment }}</div></div>
                         <label ng-attr-for="jednotka" class="col-sm-4 control-label">Počet účelových jednotek v objektu</label>
